@@ -28,11 +28,11 @@ namespace Gim30{
     string frame_id;
     bool publish_intensity;
 
-    float angle_min;
-    float angle_max;
-    float deg_min;
-    float deg_max;
-    float get_steps;
+    double angle_min;
+    double angle_max;
+    double deg_min;
+    double deg_max;
+    double get_steps;
 
     ros::NodeHandle n;
     ros::Publisher pc_pub;
@@ -81,11 +81,11 @@ void Gim30::Get3d::callback(const sensor_msgs::LaserScan::ConstPtr& laser)
   pc_data.points.resize(laser->ranges.size());
   pc_data.channels[0].values.resize(laser->intensities.size());
 
-  float tmp;
-  float alpha;
-  float beta;
+  double tmp;
+  double alpha;
+  double beta;
   
-  for(float i=0; i<=get_steps; i++){
+  for(double i=0; i<=get_steps; i++){
     tmp = new_angle-old_angle;
     if(tmp > 180)
       tmp = 360 - tmp;

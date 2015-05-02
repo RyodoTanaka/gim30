@@ -19,8 +19,8 @@ namespace Gim30{
     
     void GetAngle();
     
-    float old_angle;
-    float new_angle;
+    double old_angle;
+    double new_angle;
 
   private:
     void SetGim30();
