@@ -20,6 +20,7 @@ namespace Gim30{
     Get3d();
 
   private:
+
     void callback(const sensor_msgs::LaserScan::ConstPtr& laser);
   
     string pc_pub_name;
@@ -34,15 +35,16 @@ namespace Gim30{
     double deg_max;
     double get_steps;
 
-    ros::NodeHandle n;
     ros::Publisher pc_pub;
     ros::Publisher pc2_pub;
     ros::Subscriber sub;
+
+    ros::NodeHandle n;
   };
 }
 
 Gim30::Get3d::Get3d() :
-  pc_pub_name("point_cloud"),
+  pc_pub_name("point_cloudino"),
   pc2_pub_name("point_cloud2"),
   laser_sub_name("laser"),
   frame_id("gim30"),
@@ -50,13 +52,13 @@ Gim30::Get3d::Get3d() :
   angle_min(-M_PI/2.0),
   angle_max(M_PI/2.0)
 {
-  n.param("pc_pub_name", pc_pub_name, pc_pub_name);
-  n.param("pc2_pub_name", pc2_pub_name, pc2_pub_name);
-  n.param("laser_sub_name", laser_sub_name, laser_sub_name);
-  n.param("frame_id", frame_id, frame_id);
-  n.param("publish_intensity", publish_intensity, publish_intensity);
-  n.param("angle_min", angle_min, angle_min);
-  n.param("angle_max", angle_max, angle_max);
+  n.param("gim30/pc_pub_name", pc_pub_name, pc_pub_name);
+  n.param("gim30/pc2_pub_name", pc2_pub_name, pc2_pub_name);
+  n.param("gim30/laser_sub_name", laser_sub_name, laser_sub_name);
+  n.param("gim30/frame_id", frame_id, frame_id);
+  n.param("gim30/publish_intensity", publish_intensity, publish_intensity);
+  n.param("gim30/angle_min", angle_min, angle_min);
+  n.param("gim30/angle_max", angle_max, angle_max);
 
   deg_min = angle_min*180.0/M_PI;
   deg_max = angle_max*180.0/M_PI;
@@ -64,13 +66,13 @@ Gim30::Get3d::Get3d() :
 
   pc_pub = n.advertise<sensor_msgs::PointCloud>(pc_pub_name, 40);
   pc2_pub = n.advertise<sensor_msgs::PointCloud2>(pc2_pub_name, 40);
-  sub = n.subscribe(laser_sub_name, 40, &Get3d::callback, this);
+  sub = n.subscribe<sensor_msgs::LaserScan>(laser_sub_name, 40, &Get3d::callback, this);
 }
 
 void Gim30::Get3d::callback(const sensor_msgs::LaserScan::ConstPtr& laser)
 {
 
-  GetAngle();
+  GetNewAngle();
 
   sensor_msgs::PointCloud pc_data;
   sensor_msgs::PointCloud2 pc2_data;
@@ -99,13 +101,15 @@ void Gim30::Get3d::callback(const sensor_msgs::LaserScan::ConstPtr& laser)
     if(publish_intensity)
       pc_data.channels[0].values[i] = laser->intensities[i];
   } 
-  
+
   pc_data.header.stamp = ros::Time::now();
 
   sensor_msgs::convertPointCloudToPointCloud2(pc_data, pc2_data);
 
   pc_pub.publish(pc_data);
   pc2_pub.publish(pc2_data);
+
+  GetOldAngle();  
 }
 
 #endif 

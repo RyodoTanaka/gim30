@@ -17,7 +17,8 @@ namespace Gim30{
     Control();
     ~Control();
     
-    void GetAngle();
+    void GetOldAngle();
+    void GetNewAngle();
     
     double old_angle;
     double new_angle;
@@ -44,7 +45,7 @@ Gim30::Control::Control() :
   old_angle(0.0),
   new_angle(1.0)
 {
-  n.param("portname", portname, portname);
+  n.param("gim30/portname", portname, portname);
   data.resize(8,'\0');
   SetGim30();
   StartGim30();
@@ -117,9 +118,16 @@ void Gim30::Control::StopGim30()
   ROS_INFO("Succeed to stop Gim30.");
 }
 
-void Gim30::Control::GetAngle()
+void Gim30::Control::GetOldAngle()
 {
-  old_angle = new_angle;
+  int tmp;
+  for(int i=0; i<8; i+=tmp)
+    tmp = read(fd, &data[i], 8);
+  old_angle = -(atoi(&data[1]) / 100.0);
+}
+
+void Gim30::Control::GetNewAngle()
+{
   int tmp;
   for(int i=0; i<8; i+=tmp)
     tmp = read(fd, &data[i], 8);
