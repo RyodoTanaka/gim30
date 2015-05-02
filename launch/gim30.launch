@@ -1,0 +1,26 @@
+<launch>
+  <group ns="gim30">
+    <arg name="multiecho" default="false" />
+    <node pkg="urg_node" type="urg_node" name="urg_node" >
+      <param name="ip_address" value="192.168.1.10" />
+      <param name="frame_id" value="laser" />
+      <param name="publish_intensity" value="true" />
+      <param name="publish_multiecho" value="$(arg multiecho)" />
+      <param name="angle_min" value="-pi/2.0" />
+      <param name="angle_max" value="pi/2.0" />
+      <param name="skip" value="0" />
+    </node>
+    
+    <node pkg="gim30" type="gim30_node" name="gim30" >
+      <param name="portname" value="/dev/ttyUSB0" />
+      <param name="pc_pub_name" value="point_cloud" />
+      <param name="pc2_pub_name" value="point_cloud2" />
+      <param name="laser_sub_name" value="scan" />
+      <group if="$(arg multiecho)">
+	<param name="laser_sub_name" value="most_intense" />
+      </group>
+      <param name="frame_id" value="gim30" /> 
+    </node>
+  </group>
+
+</launch>
