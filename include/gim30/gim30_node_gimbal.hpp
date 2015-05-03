@@ -14,7 +14,7 @@ namespace Gim30{
   class Gimbal{
   public:
     Gimbal();
-    ~Gimbal();
+     ~Gimbal();
     
     bool GetOldAngle();
     bool GetNewAngle();
@@ -52,8 +52,7 @@ Gim30::Gimbal::Gimbal() :
 
 Gim30::Gimbal::~Gimbal()
 {
-  cout << "here" << endl;
-  StopGim30();
+   StopGim30();
   CloseGim30();
 }
 

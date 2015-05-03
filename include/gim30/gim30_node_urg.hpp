@@ -15,7 +15,7 @@ namespace Gim30{
   {
   public:
     URG();
-    ~URG();
+     ~URG();
 
     bool GetURGData();
     

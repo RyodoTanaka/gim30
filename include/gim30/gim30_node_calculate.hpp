@@ -19,6 +19,7 @@ namespace Gim30{
   {
   public:
     Calculate();
+    ~Calculate(){}
     
     void CalculateDatas();
 
