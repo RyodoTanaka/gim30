@@ -15,7 +15,7 @@
 using namespace std;
 
 namespace Gim30{
-  class Calculate : private Gim30::Gimbal, private Gim30::URG
+  class Calculate : public Gim30::Gimbal, public Gim30::URG
   {
   public:
     Calculate();
