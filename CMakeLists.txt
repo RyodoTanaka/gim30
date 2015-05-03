@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(gim30_3d)
+project(gim30)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -7,8 +7,6 @@ project(gim30_3d)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   sensor_msgs
-  std_msgs
-  tf
 )
 
 ## System dependencies are found with CMake's conventions
@@ -83,7 +81,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES gim30_3d
-#  CATKIN_DEPENDS roscpp sensor_msgs std_msgs
+ CATKIN_DEPENDS roscpp sensor_msgs
 #  DEPENDS system_lib
 )
 
@@ -93,8 +91,8 @@ catkin_package(
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-include_directories(include)
 include_directories(
+  include
   /usr/local/include/urg_c
   ${catkin_INCLUDE_DIRS}
 )
@@ -108,17 +106,16 @@ link_directories(
 #)
 
 ## Declare a cpp executable
-add_executable(gim30_3d_node 
-  src/main.cpp
-  src/Interface/interface.cpp
+add_executable(gim30_node 
+  src/gim30_node.cpp
 )
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-add_dependencies(gim30_3d_node gim30_3d_generate_messages_cpp)
+add_dependencies(gim30_node gim30_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(gim30_3d_node
+target_link_libraries(gim30_node
   ${catkin_LIBRARIES}
   urg_c
 )
