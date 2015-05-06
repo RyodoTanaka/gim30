@@ -108,6 +108,7 @@ link_directories(
 ## Declare a cpp executable
 add_executable(gim30_node 
   src/gim30_node.cpp
+  src/gim30_node_functions.cpp
 )
 
 ## Add cmake target dependencies of the executable/library
