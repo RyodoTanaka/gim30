@@ -10,7 +10,7 @@ int main(int argc, char* argv[])
 
   ros::Rate r(40);
 
-  while(gim30.n.ok()){
+  while(ros::ok()){
     gim30.CalculateDatas();
     r.sleep();
   }
