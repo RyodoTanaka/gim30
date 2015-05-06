@@ -52,6 +52,7 @@ Gim30::Gimbal::Gimbal() :
 
 Gim30::Gimbal::~Gimbal()
 {
+  cout << "here" << endl;
   StopGim30();
   CloseGim30();
 }
