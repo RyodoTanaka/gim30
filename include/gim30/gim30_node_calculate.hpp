@@ -15,7 +15,7 @@
 using namespace std;
 
 namespace Gim30{
-  class Calculate : public Gim30::Gimbal, public Gim30::URG
+  class Calculate :  public Gim30::Gimbal,  public Gim30::URG
   {
   public:
     Calculate();
@@ -90,13 +90,13 @@ void Gim30::Calculate::CalculateDatas()
       tmp = new_angle-old_angle;
       if(tmp > 180)
 	tmp = 360 - tmp;
-      tmp = (deg_max-deg_min)*tmp*i/(360.0*step) + old_angle + (180.0+deg_min)/360.0*tmp;
+      tmp = (deg_max-deg_min)*tmp*(double)i/(360.0*step) + old_angle + (180.0+deg_min)/360.0*tmp;
       alpha = atan(0.57734*sin(tmp*M_PI/180.0));
       beta = -atan(0.57734*cos(tmp*M_PI/180.0)*cos(alpha));
-      tmp = (rad_max - rad_min)*i/step + rad_min;    
-      pc_data.points[i].x = (double)ranges[i]/1000.0*cos(tmp)*cos(beta) + 0.039*sin(beta);
-      pc_data.points[i].y = (double)ranges[i]/1000.0*cos(tmp)*sin(alpha)*sin(beta) + (double)ranges[i]/1000.0*sin(tmp)*cos(alpha) - 0.039*sin(alpha)*cos(beta);
-      pc_data.points[i].z = -(double)ranges[i]/1000.0*cos(tmp)*cos(alpha)*sin(beta) + (double)ranges[i]/1000.0*sin(tmp)*sin(alpha) + 0.039*cos(alpha)*cos(beta);
+      tmp = (rad_max - rad_min)*(double)i/step + rad_min;    
+      pc_data.points[i].x = ranges[i]*cos(tmp)*cos(beta) + 0.039*sin(beta);
+      pc_data.points[i].y = ranges[i]*cos(tmp)*sin(alpha)*sin(beta) + ranges[i]*sin(tmp)*cos(alpha) - 0.039*sin(alpha)*cos(beta);
+      pc_data.points[i].z = -ranges[i]*cos(tmp)*cos(alpha)*sin(beta) + ranges[i]*sin(tmp)*sin(alpha) + 0.039*cos(alpha)*cos(beta);
       if(publish_intensity)
 	pc_data.channels[0].values[i] = intensities[i];
     } 

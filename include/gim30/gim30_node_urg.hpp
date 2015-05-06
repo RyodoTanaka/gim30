@@ -32,6 +32,7 @@ namespace Gim30{
     double *ranges;
     unsigned short *intensities;
 
+    ros::NodeHandle n;
   
   private:
     void OpenURG();
@@ -44,8 +45,6 @@ namespace Gim30{
 
     urg_t urg;
     long timestamp;
-
-    ros::NodeHandle n;
   };
 }
 
