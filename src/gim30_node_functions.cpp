@@ -125,7 +125,7 @@ void Gim30::CalculateDatas()
 
   ROS_INFO("convert start");
 
-  sensor_msgs::convertPointCloudToPointCloud2(pc_data, pc2_data);
+  //sensor_msgs::convertPointCloudToPointCloud2(pc_data, pc2_data);
 
   ROS_INFO("end of gim30");
 
