@@ -28,14 +28,28 @@ Gim30::Gim30(ros::NodeHandle &n) :
   n.param("gim30/range_minimum", range_min, range_min);
   n.param("gim30/range_maximum", range_max, range_max);
 
-  OpenURG();
+  try{
+    OpenURG();
+  }
+  catch(runtime_error){
+    CloseURG();
+    throw;
+  }
   //////////////////////////////////////////////////////////////////////////////
 
   // Serial ////////////////////////////////////////////
   n.param("gim30/portname", portname, portname);
   data.resize(8,'\0');
-  OpenGim30();
-  StartGim30();
+  
+  try{
+    OpenGim30();
+    StartGim30();
+  }
+  catch(runtime_error& e){
+    StopGim30();
+    CloseGim30();
+    throw;
+  }
   /////////////////////////////////////////////////////
 }
 
@@ -56,66 +70,13 @@ Gim30::~Gim30()
 
 int Gim30::GetDatas()
 { 
-  if(!GetURGData())
-    return 1;
   if(!GetAngle())
     return 1;
+  if(!GetURGData())
+    return 2;
 
   return 0;
 }
-
-// void Gim30::CalculateDatas()
-// {
-//   double tmp;
-//   double alpha;
-//   double beta;
-  
-//   //  GetOldAngle();
-//   ROS_INFO("start megering");
-//   urg_start_measurement(&urg, URG_DISTANCE_INTENSITY, 1, 0);
-//   if(urg_get_distance_intensity(&urg, ranges_raw, intensities, &timestamp) <= 0){
-//     ROS_WARN("Disable to get URG data on Gim30.");
-//   }
-//   GetAngle();
-//   ROS_INFO("stop megering");
-
-//   // if(!GetDatas()){
-//   for(int i=0; i<step; i++){
-//     ranges[i] = (double)ranges_raw[i] / 1000.0;
-//     if(ranges[i] > range_max || ranges[i] < range_min)
-//       ranges[i] = 0;
-//     tmp = new_angle-old_angle;
-//     if(tmp > 180)
-//       tmp = 360 - tmp;
-//     tmp = (deg_max-deg_min)*tmp*(double)i/(360.0*step) + old_angle + (180.0+deg_min)/360.0*tmp;
-//     alpha = atan(0.57734*sin(tmp*M_PI/180.0));
-//     beta = -atan(0.57734*cos(tmp*M_PI/180.0)*cos(alpha));
-//     tmp = (rad_max - rad_min)*(double)i/step + rad_min;    
-//     pc_data.points[i].x = ranges[i]*cos(tmp)*cos(beta) + 0.039*sin(beta);
-//     pc_data.points[i].y = ranges[i]*cos(tmp)*sin(alpha)*sin(beta) + ranges[i]*sin(tmp)*cos(alpha) - 0.039*sin(alpha)*cos(beta);
-//     pc_data.points[i].z = -ranges[i]*cos(tmp)*cos(alpha)*sin(beta) + ranges[i]*sin(tmp)*sin(alpha) + 0.039*cos(alpha)*cos(beta);
-//     if(publish_intensity)
-//       pc_data.channels[0].values[i] = intensities[i];
-//   } 
-  
-//   ROS_INFO("culculate fhinish");
-
-//   pc_data.header.stamp = ros::Time::now();
-
-//   ROS_INFO("convert start");
-
-//   //sensor_msgs::convertPointCloudToPointCloud2(pc_data, pc2_data);
-
-//   ROS_INFO("end of gim30");
-
-
-//   // pc_pub.publish(pc_data);
-//   // pc2_pub.publish(pc2_data);
-//   // }
-//   // else{
-//   //   ROS_WARN("Anable to get Gim30 datas.");
-//   // }
-// }
 
 void Gim30::OpenGim30()
 {
@@ -126,7 +87,7 @@ void Gim30::OpenGim30()
     ROS_WARN("Failed to open the port : Gime30.");
     throw runtime_error("Failed to Open the port : Gim30.");    
   } 
-  
+
   //Get old termios for Gim30
   if(ioctl(fd, TCGETS, &oldtio) < 0){
     ROS_WARN("Gim30 ioctl TCGET error.");
@@ -146,6 +107,7 @@ void Gim30::OpenGim30()
     ROS_WARN("Gim30 ioctl TCSETS error.");
     throw runtime_error("Gim30 ioctl TCSETS error.");
   }
+
   ROS_INFO("Gim30 is opened.");
 }
 
@@ -166,6 +128,7 @@ void Gim30::StartGim30()
     ROS_WARN("Gim30 write error. Cannot start Gim30.");
     throw runtime_error("Gim30 write error to Start.");
   }
+
   ROS_INFO("Start the Gim30.");
 }
 
