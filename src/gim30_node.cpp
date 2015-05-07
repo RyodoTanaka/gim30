@@ -9,11 +9,12 @@ int main(int argc, char* argv[])
 
   Gim30 gim30(n);
 
-  ros::Rate r(40);
+  // ros::Rate r(80.0);
 
-  while(ros::ok()){
+  while(n.ok()){
+    ROS_INFO("here");
     gim30.CalculateDatas();
-    r.sleep();
+    // r.sleep();
   }
   return 0;
 }

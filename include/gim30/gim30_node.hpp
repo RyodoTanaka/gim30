@@ -43,6 +43,7 @@ private:
   /////////////////////////////////////////
 
   // Serial //////////////////////////////////////
+  bool GetAngle();
   bool GetOldAngle();
   bool GetNewAngle();
   void OpenGim30();
