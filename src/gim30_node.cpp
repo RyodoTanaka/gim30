@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
   ros::NodeHandle param_n;
   bool err_flg = false;
 
-  try {
+  try{
     Gim30 gim30(param_n);
 
     // Publish args ///////////////////////////////////
@@ -59,8 +59,13 @@ int main(int argc, char* argv[])
       	ROS_INFO("Get the datas & start calculate.");
       	for(int i=0; i<gim30.step; i++){
       	  gim30.ranges[i] = (double)gim30.ranges_raw[i] / 1000.0;
-      	  if(gim30.ranges[i] > gim30.range_max || gim30.ranges[i] < gim30.range_min)
+      	  if(gim30.ranges[i] > gim30.range_max || gim30.ranges[i] < gim30.range_min){
       	    gim30.ranges[i] = 0;
+	    pc_data.points[i].x = 0;
+	    pc_data.points[i].y = 0;
+	    pc_data.points[i].z = 0;
+	    continue;
+	  }
       	  tmp = gim30.new_angle-gim30.old_angle;
       	  if(tmp > 180)
       	    tmp = 360 - tmp;
@@ -90,14 +95,12 @@ int main(int argc, char* argv[])
       else{
       	ROS_WARN("Anable to get Gim30 datas.");
       }
-      if(err_flg)
-	break;
       ROS_INFO("Finish the loop.");
     }
   }
   catch(runtime_error &e){
-    ROS_BREAK();
-    err_flg = true;
+    cerr << e.what() << endl;
+    return 1;
   }
 
   return 0;

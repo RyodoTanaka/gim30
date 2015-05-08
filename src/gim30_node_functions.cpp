@@ -183,15 +183,6 @@ bool Gim30::GetNewAngle()
 
 void Gim30::OpenURG()
 {
-  // if(urg_open(&urg,URG_SERIAL,serial_port.c_str(),(long)serial_baud) < 0){  
-  if(urg_open(&urg,URG_ETHERNET,ip_address.c_str(),(long)ip_port) < 0){
-    ROS_WARN("URG on Gim30 open error.");
-    throw runtime_error("URG on Gim30 open error.");
-  }
-  // }
-
-  urg_set_scanning_parameter(&urg, urg_deg2step(&urg,deg_min), urg_deg2step(&urg,deg_max), skip);
-
   rad_min = deg_min*M_PI/180.0;
   rad_max = deg_max*M_PI/180.0;
   step = (deg_max - deg_min)*4.0;
@@ -199,6 +190,15 @@ void Gim30::OpenURG()
   ranges_raw = new long[step+1];
   ranges = new double[step+1];
   intensities = new unsigned short[step+1];
+
+  if(urg_open(&urg,URG_SERIAL,serial_port.c_str(),(long)serial_baud) < 0){  
+    if(urg_open(&urg,URG_ETHERNET,ip_address.c_str(),(long)ip_port) < 0){
+      ROS_WARN("URG on Gim30 open error.");
+      throw runtime_error("URG on Gim30 open error.");
+    }
+  }
+
+  urg_set_scanning_parameter(&urg, urg_deg2step(&urg,deg_min), urg_deg2step(&urg,deg_max), skip);
 }
 
 void Gim30::CloseURG()
@@ -207,7 +207,7 @@ void Gim30::CloseURG()
   delete ranges;
   delete intensities;
   urg_close(&urg);
-}
+} 
 
 bool Gim30::GetURGData()
 {
