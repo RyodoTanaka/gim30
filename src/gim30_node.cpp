@@ -39,7 +39,7 @@ int main(int argc, char* argv[])
 
     pc_data.header.frame_id = frame_id;
     pc_data.channels.resize(1);
-    pc_data.channels[0].name = "intensities";
+    pc_data.channels[0].name = "intensities[0]";
     pc_data.points.resize(gim30.step);
     pc_data.channels[0].values.resize(gim30.step);
 
@@ -53,31 +53,32 @@ int main(int argc, char* argv[])
 
     while(ros::ok()){
       ROS_INFO("Start the loop.");
-      gim30.GetDatas();
+
+      //gim30.GetDatas();
 
       if(!gim30.GetDatas()){
       	ROS_INFO("Get the datas & start calculate.");
       	for(int i=0; i<gim30.step; i++){
-      	  gim30.ranges[i] = (double)gim30.ranges_raw[i] / 1000.0;
-      	  if(gim30.ranges[i] > gim30.range_max || gim30.ranges[i] < gim30.range_min){
-      	    gim30.ranges[i] = 0;
-	    pc_data.points[i].x = 0;
-	    pc_data.points[i].y = 0;
-	    pc_data.points[i].z = 0;
-	    continue;
-	  }
+      	  if(gim30.ranges[0][i] > gim30.range_max || gim30.ranges[0][i] < gim30.range_min){
+      	    pc_data.points[i].x = 0;
+      	    pc_data.points[i].y = 0;
+      	    pc_data.points[i].z = 0;
+	    if(gim30.publish_intensity)
+	      pc_data.channels[0].values[0] = 0;
+      	    continue;
+      	  }
       	  tmp = gim30.new_angle-gim30.old_angle;
       	  if(tmp > 180)
-      	    tmp = 360 - tmp;
+      	    tmp = tmp - 360;
       	  tmp = (gim30.deg_max - gim30.deg_min)*tmp*(double)i/(360.0*gim30.step) + gim30.old_angle + (180.0 + gim30.deg_min)/360.0*tmp;
       	  alpha = atan(0.57734*sin(tmp*M_PI/180.0));
       	  beta = -atan(0.57734*cos(tmp*M_PI/180.0)*cos(alpha));
       	  tmp = (gim30.rad_max - gim30.rad_min)*(double)i/gim30.step + gim30.rad_min;    
-      	  pc_data.points[i].x = gim30.ranges[i]*cos(tmp)*cos(beta) + 0.039*sin(beta);
-      	  pc_data.points[i].y = gim30.ranges[i]*cos(tmp)*sin(alpha)*sin(beta) + gim30.ranges[i]*sin(tmp)*cos(alpha) - 0.039*sin(alpha)*cos(beta);
-      	  pc_data.points[i].z = -gim30.ranges[i]*cos(tmp)*cos(alpha)*sin(beta) + gim30.ranges[i]*sin(tmp)*sin(alpha) + 0.039*cos(alpha)*cos(beta);
+      	  pc_data.points[i].x = gim30.ranges[0][i]*cos(tmp)*cos(beta) + 0.039*sin(beta);
+      	  pc_data.points[i].y = gim30.ranges[0][i]*cos(tmp)*sin(alpha)*sin(beta) + gim30.ranges[0][i]*sin(tmp)*cos(alpha) - 0.039*sin(alpha)*cos(beta);
+      	  pc_data.points[i].z = -gim30.ranges[0][i]*cos(tmp)*cos(alpha)*sin(beta) + gim30.ranges[0][i]*sin(tmp)*sin(alpha) + 0.039*cos(alpha)*cos(beta);
       	  if(gim30.publish_intensity)
-      	    pc_data.channels[0].values[i] = gim30.intensities[i];
+      	    pc_data.channels[0].values[i] = gim30.intensities[0][i];
       	} 
       	ROS_INFO("Finish calculate");
       

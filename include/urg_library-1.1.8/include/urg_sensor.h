@@ -130,7 +130,7 @@ extern "C" {
     /*!
       \see urg_start_measurement(), urg_max_data_size()
     */
-    extern int urg_get_distance(urg_t *urg, long data[], long *time_stamp);
+    extern int urg_get_distance(urg_t *urg, float data[], long *time_stamp);
 
 
     /*!
@@ -147,8 +147,8 @@ extern "C" {
 
       \see urg_start_measurement(), urg_max_data_size()
     */
-    extern int urg_get_distance_intensity(urg_t *urg, long data[],
-                                          unsigned short intensity[],
+    extern int urg_get_distance_intensity(urg_t *urg, float data[],
+                                          float intensity[],
                                           long *time_stamp);
 
 
@@ -164,7 +164,7 @@ extern "C" {
 
       \see urg_start_measurement(), urg_max_data_size()
     */
-    extern int urg_get_multiecho(urg_t *urg, long data_multi[], long *time_stamp);
+    extern int urg_get_multiecho(urg_t *urg, float data_multi[], long *time_stamp);
 
 
     /*!
@@ -182,8 +182,8 @@ extern "C" {
 
       \see urg_start_measurement(), urg_max_data_size()
     */
-    extern int urg_get_multiecho_intensity(urg_t *urg, long data_multi[],
-                                           unsigned short intensity_multi[],
+    extern int urg_get_multiecho_intensity(urg_t *urg, float data_multi[],
+                                           float intensity_multi[],
                                            long *time_stamp);
 
 

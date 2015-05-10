@@ -70,6 +70,7 @@ Gim30::~Gim30()
 
 int Gim30::GetDatas()
 { 
+  
   if(!GetAngle())
     return 1;
   if(!GetURGData())
@@ -152,7 +153,7 @@ bool Gim30::GetAngle()
       return false;
   }
   new_angle = -(atoi(&data[1]) / 100.0);
-  //cout << old_angle << endl;
+  cout << new_angle - old_angle << endl;
   return true;
 }
 
@@ -185,11 +186,19 @@ void Gim30::OpenURG()
 {
   rad_min = deg_min*M_PI/180.0;
   rad_max = deg_max*M_PI/180.0;
-  step = (deg_max - deg_min)*4.0;
+  step = (deg_max - deg_min)*4.0 + 1;
 
-  ranges_raw = new long[step+1];
-  ranges = new double[step+1];
-  intensities = new unsigned short[step+1];
+  ranges = new float*[2];
+  intensities = new float*[2];
+
+  for(int j = 0; j<2; j++){
+    for(int i = 0; i<step; i++){
+      ranges[j] = new float[step];
+      intensities[j] = new float[step];
+      ranges[j][i] = 0;
+      intensities[j][i] = 0;
+    }
+  }
 
   if(urg_open(&urg,URG_SERIAL,serial_port.c_str(),(long)serial_baud) < 0){  
     if(urg_open(&urg,URG_ETHERNET,ip_address.c_str(),(long)ip_port) < 0){
@@ -199,28 +208,42 @@ void Gim30::OpenURG()
   }
 
   urg_set_scanning_parameter(&urg, urg_deg2step(&urg,deg_min), urg_deg2step(&urg,deg_max), skip);
+
+  if(publish_intensity)
+    urg_start_measurement(&urg, URG_DISTANCE_INTENSITY, URG_SCAN_INFINITY, skip);
+  else
+    urg_start_measurement(&urg, URG_DISTANCE, URG_SCAN_INFINITY, skip);
+
 }
 
 void Gim30::CloseURG()
 {
-  delete ranges_raw;
-  delete ranges;
-  delete intensities;
+  for(int i=0; i<2; i++){
+    delete ranges[i];
+    delete intensities[i];
+  }
+  delete[] ranges;
+  delete[] intensities;
+
   urg_close(&urg);
 } 
 
 bool Gim30::GetURGData()
 {
   if(publish_intensity){
-    urg_start_measurement(&urg, URG_DISTANCE_INTENSITY, 1, 0);
-    if(urg_get_distance_intensity(&urg, ranges_raw, intensities, &timestamp) <= 0){
+    for(int i=0; i<step; i++){
+      ranges[0][i] = ranges[1][i];
+      intensities[0][i] = intensities[1][i];
+    }
+    if(urg_get_distance_intensity(&urg, ranges[1], intensities[1], &timestamp) <= 0){
       ROS_WARN("Disable to get URG data on Gim30.");
       return false;
     }
   }
   else{
-    urg_start_measurement(&urg, URG_DISTANCE, 1, 0);
-    if(urg_get_distance(&urg, ranges_raw, &timestamp) <= 0){
+    for(int i=0; i<step; i++)
+      ranges[0][i] = ranges[1][i];
+    if(urg_get_distance(&urg, ranges[1], &timestamp) <= 0){
       ROS_WARN("Disable to get URG data on Gim30.");
       return false;
     }

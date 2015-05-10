@@ -32,9 +32,8 @@ public:
   double range_min;
   double range_max;
   int step;
-  long *ranges_raw;
-  double *ranges;
-  unsigned short *intensities;
+  float **ranges;
+  float **intensities;
   //////////////////////////////////////
 
   // Gim30 args ////////////////////////

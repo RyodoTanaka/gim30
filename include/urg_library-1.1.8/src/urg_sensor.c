@@ -444,8 +444,8 @@ static urg_measurement_type_t parse_distance_echoback(urg_t *urg,
 }
 
 
-static int receive_length_data(urg_t *urg, long length[],
-                               unsigned short intensity[],
+static int receive_length_data(urg_t *urg, float length[],
+                               float intensity[],
                                urg_measurement_type_t type, char buffer[])
 {
     int n;
@@ -527,7 +527,7 @@ static int receive_length_data(urg_t *urg, long length[],
                 int i;
                 if (length) {
                     for (i = 1; i < multiecho_max_size; ++i) {
-                        length[index + i] = 0;
+                        length[index + i] = 0.0;
                     }
                 }
                 if (intensity) {
@@ -539,14 +539,14 @@ static int receive_length_data(urg_t *urg, long length[],
 
             // 距離データの格納
             if (length) {
-                length[index] = urg_scip_decode(p, 3);
+	      length[index] = (double)urg_scip_decode(p, 3)/1000.0;
             }
             p += 3;
 
             // 強度データの格納
             if (is_intensity) {
                 if (intensity) {
-                    intensity[index] = (unsigned short)urg_scip_decode(p, 3);
+                    intensity[index] = (double)urg_scip_decode(p, 3);
                 }
                 p += 3;
             }
@@ -564,7 +564,7 @@ static int receive_length_data(urg_t *urg, long length[],
 
 
 //! 距離データの取得
-static int receive_data(urg_t *urg, long data[], unsigned short intensity[],
+static int receive_data(urg_t *urg, float data[], float intensity[],
                         long *time_stamp)
 {
     urg_measurement_type_t type;
@@ -927,7 +927,7 @@ int urg_start_measurement(urg_t *urg, urg_measurement_type_t type,
 }
 
 
-int urg_get_distance(urg_t *urg, long data[], long *time_stamp)
+int urg_get_distance(urg_t *urg, float data[], long *time_stamp)
 {
     if (!urg->is_active) {
         return set_errno_and_return(urg, URG_NOT_CONNECTED);
@@ -937,7 +937,7 @@ int urg_get_distance(urg_t *urg, long data[], long *time_stamp)
 
 
 int urg_get_distance_intensity(urg_t *urg,
-                               long data[], unsigned short intensity[],
+                               float data[], float intensity[],
                                long *time_stamp)
 {
     if (!urg->is_active) {
@@ -948,7 +948,7 @@ int urg_get_distance_intensity(urg_t *urg,
 }
 
 
-int urg_get_multiecho(urg_t *urg, long data_multi[], long *time_stamp)
+int urg_get_multiecho(urg_t *urg, float data_multi[], long *time_stamp)
 {
     if (!urg->is_active) {
         return set_errno_and_return(urg, URG_NOT_CONNECTED);
@@ -959,8 +959,8 @@ int urg_get_multiecho(urg_t *urg, long data_multi[], long *time_stamp)
 
 
 int urg_get_multiecho_intensity(urg_t *urg,
-                                long data_multi[],
-                                unsigned short intensity_multi[],
+                                float data_multi[],
+                                float intensity_multi[],
                                 long *time_stamp)
 {
     if (!urg->is_active) {
