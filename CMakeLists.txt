@@ -93,7 +93,7 @@ catkin_package(
 ## Your package locations should be listed before other locations
 include_directories(
   include
-  /usr/local/include/urg_c
+  include/urg_library-1.1.8/include
   ${catkin_INCLUDE_DIRS}
 )
 link_directories(
@@ -111,14 +111,28 @@ add_executable(gim30_node
   src/gim30_node_functions.cpp
 )
 
+add_library(urg_c 
+  include/urg_library-1.1.8/src/urg_connection.c
+  include/urg_library-1.1.8/src/urg_debug.c
+  include/urg_library-1.1.8/src/urg_ring_buffer.c
+  include/urg_library-1.1.8/src/urg_sensor.c
+  include/urg_library-1.1.8/src/urg_serial.c
+  include/urg_library-1.1.8/src/urg_serial_linux.c
+  include/urg_library-1.1.8/src/urg_serial_utils.c
+  include/urg_library-1.1.8/src/urg_serial_utils_linux.c
+  include/urg_library-1.1.8/src/urg_tcpclient.c
+  include/urg_library-1.1.8/src/urg_utils.c
+)
+
+
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-add_dependencies(gim30_node gim30_generate_messages_cpp)
+add_dependencies(gim30_node urg_c gim30_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(gim30_node
-  ${catkin_LIBRARIES}
   urg_c
+  ${catkin_LIBRARIES}
 )
 
 #############
