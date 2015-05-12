@@ -19,7 +19,7 @@ public:
   Gim30(ros::NodeHandle &n);
   ~Gim30();
 
-  int GetDatas();
+  int GetDatas(ros::Time& t);
 
   // URG args //////////////////////////
   bool publish_intensity;
@@ -61,7 +61,7 @@ private:
   // URG /////////////////////////////////////////
   void OpenURG();
   void CloseURG();
-  bool GetURGData();
+  bool GetURGData(ros::Time& t);
 
   string ip_address;
   int ip_port;

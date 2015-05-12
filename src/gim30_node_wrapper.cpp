@@ -31,7 +31,7 @@ Gim30::Gim30(ros::NodeHandle &n) :
   try{
     OpenURG();
   }
-  catch(runtime_error){
+  catch(runtime_error& e){
     CloseURG();
     throw;
   }
@@ -48,6 +48,7 @@ Gim30::Gim30(ros::NodeHandle &n) :
   catch(runtime_error& e){
     StopGim30();
     CloseGim30();
+    CloseURG();
     throw;
   }
   /////////////////////////////////////////////////////
@@ -68,12 +69,12 @@ Gim30::~Gim30()
 
 
 
-int Gim30::GetDatas()
+int Gim30::GetDatas(ros::Time& t)
 { 
   
   if(!GetAngle())
     return 1;
-  if(!GetURGData())
+  if(!GetURGData(t))
     return 2;
 
   return 0;
@@ -153,7 +154,7 @@ bool Gim30::GetAngle()
       return false;
   }
   new_angle = -(atoi(&data[1]) / 100.0);
-  cout << new_angle - old_angle << endl;
+  //  cout << new_angle << "\t" << old_angle << "\t" << new_angle - old_angle << endl;
   return true;
 }
 
@@ -166,7 +167,6 @@ bool Gim30::GetOldAngle()
       return false;
   }
   old_angle = -(atoi(&data[1]) / 100.0);
-  //cout << old_angle << endl;
   return true;
 }
 
@@ -228,23 +228,31 @@ void Gim30::CloseURG()
   urg_close(&urg);
 } 
 
-bool Gim30::GetURGData()
+bool Gim30::GetURGData(ros::Time& t)
 {
   if(publish_intensity){
     for(int i=0; i<step; i++){
       ranges[0][i] = ranges[1][i];
       intensities[0][i] = intensities[1][i];
     }
+    t = ros::Time::now();
     if(urg_get_distance_intensity(&urg, ranges[1], intensities[1], &timestamp) <= 0){
       ROS_WARN("Disable to get URG data on Gim30.");
+      for(int i=0; i<step; i++){
+	ranges[1][i] = 0;
+	intensities[1][i] = 0;
+      } 
       return false;
     }
   }
   else{
     for(int i=0; i<step; i++)
       ranges[0][i] = ranges[1][i];
+    t = ros::Time::now();
     if(urg_get_distance(&urg, ranges[1], &timestamp) <= 0){
       ROS_WARN("Disable to get URG data on Gim30.");
+      for(int i=0; i<step; i++)
+	ranges[1][i] = 0;
       return false;
     }
   }

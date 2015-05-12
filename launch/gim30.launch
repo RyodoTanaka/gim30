@@ -9,10 +9,12 @@
     <param name="serial_port" value="/dev/ttyACM0" />
     <param name="serial_baud" value="115200" />
     <param name="publish_intensity" value="true" />
-    <param name="degree_minimum" value="-90" />
-    <param name="degree_maximum" value="90" />
+    <param name="degree_minimum" value="-113.5" />
+    <param name="degree_maximum" value="113.5" />
     <param name="skip" value="0" />
-    <param name="range_minimum" value="0.1" />
+    <param name="range_minimum" value="1.0" />
     <param name="range_maximum" value="30" />
   </node>
+  
+  <node pkg="rviz" type="rviz" name="rviz" />
 </launch>
