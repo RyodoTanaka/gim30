@@ -6,6 +6,9 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
 )
 
+find_package(roslaunch)
+roslaunch_add_file_check(test/gim30_launch_test.xml)
+
 catkin_package(
  CATKIN_DEPENDS roscpp sensor_msgs
  )
@@ -43,6 +46,3 @@ target_link_libraries(gim30_node
   urg_c
   ${catkin_LIBRARIES}
 )
-
-find_package(roslaunch)
-roslaunch_add_file_check(test/gim30_launch_test.xml)
