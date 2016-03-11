@@ -15,6 +15,4 @@
     <param name="range_minimum" value="1.0" />
     <param name="range_maximum" value="30" />
   </node>
-  
-  <node pkg="rviz" type="rviz" name="rviz" />
 </launch>

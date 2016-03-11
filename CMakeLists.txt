@@ -43,3 +43,6 @@ target_link_libraries(gim30_node
   urg_c
   ${catkin_LIBRARIES}
 )
+
+find_package(roslaunch)
+roslaunch_add_file_check(test/gim30_launch_test.xml)
