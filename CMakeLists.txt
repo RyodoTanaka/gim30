@@ -11,7 +11,7 @@ catkin_package(
  )
 
 find_package(roslaunch)
-# roslaunch_add_file_check(test/gim30_launch_test.xml)
+roslaunch_add_file_check(test/gim30_launch_test.xml)
 
 include_directories(
   include
