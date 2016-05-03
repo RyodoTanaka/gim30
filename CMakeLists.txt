@@ -10,7 +10,7 @@ catkin_package(
  CATKIN_DEPENDS roscpp sensor_msgs
  )
 
-# find_package(roslaunch)
+find_package(roslaunch)
 roslaunch_add_file_check(test/gim30_launch_test.xml)
 
 include_directories(
