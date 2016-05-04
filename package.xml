@@ -15,5 +15,5 @@
   <build_depend>sensor_msgs</build_depend>
   <run_depend>roscpp</run_depend>
   <run_depend>sensor_msgs</run_depend>
-  <run_depend>roslaunc</run_depend>
+  <run_depend>roslaunch</run_depend>
 </package>
