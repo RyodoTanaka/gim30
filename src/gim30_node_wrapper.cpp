@@ -3,8 +3,8 @@
 Gim30::Gim30(ros::NodeHandle &n) :
   portname("/dev/ttyUSB0"),
   fd(-1),
-  old_angle(0.0),
-  new_angle(1.0),
+  old_angle(-720.0),
+  new_angle(-720.0),
   ip_address("192.168.0.10"),
   ip_port(10940),
   serial_port("/dev/ttyACM0"),
@@ -71,13 +71,14 @@ Gim30::~Gim30()
 
 int Gim30::GetDatas(ros::Time& t)
 { 
-  
-  if(!GetAngle())
-    return 1;
-  if(!GetURGData(t))
-    return 2;
 
-  return 0;
+  if(GetURGData(t) == false)
+	return false;
+  if(GetAngle() == false)
+	return false;
+
+
+  return true;
 }
 
 void Gim30::OpenGim30()
@@ -146,14 +147,30 @@ void Gim30::StopGim30()
 
 bool Gim30::GetAngle()
 {
+  //cout << old_angle << ", " << new_angle << endl;
   int tmp;
-  old_angle = new_angle;
-  for(int i=0; i<8; i+=tmp){
-    tmp = read(fd, &data[i], 8);
-    if(tmp < 0)
-      return false;
+  // 2回連続でangleが取れない時は失敗
+  if(old_angle == new_angle){
+	old_angle = new_angle;
+  	ROS_WARN("failed to get angle");
+  	for(int i=0; i<8; i+=tmp){
+  	  tmp = read(fd, &data[i], 8);
+  	  if(tmp < 0)
+  		return false;
+  	}
+  	new_angle = -(atoi(&data[1]) / 100.0);
+  	return false;
+  }  
+  else{
+	old_angle = new_angle;
+	for(int i=0; i<8; i+=tmp){
+	  tmp = read(fd, &data[i], 8);
+	  if(tmp < 0)
+		return false;
+	}
+	//cout << "succeed to get angle" << endl;
+	new_angle = -(atoi(&data[1]) / 100.0);
   }
-  new_angle = -(atoi(&data[1]) / 100.0);
   //  cout << new_angle << "\t" << old_angle << "\t" << new_angle - old_angle << endl;
   return true;
 }
@@ -188,13 +205,13 @@ void Gim30::OpenURG()
   rad_max = deg_max*M_PI/180.0;
   step = (deg_max - deg_min)*4.0 + 1;
 
-  ranges = new float*[2];
-  intensities = new float*[2];
+  ranges = new double*[2];
+  intensities = new double*[2];
 
   for(int j = 0; j<2; j++){
     for(int i = 0; i<step; i++){
-      ranges[j] = new float[step];
-      intensities[j] = new float[step];
+      ranges[j] = new double[step];
+      intensities[j] = new double[step];
       ranges[j][i] = 0;
       intensities[j][i] = 0;
     }
@@ -239,8 +256,8 @@ bool Gim30::GetURGData(ros::Time& t)
     if(urg_get_distance_intensity(&urg, ranges[1], intensities[1], &timestamp) <= 0){
       ROS_WARN("Disable to get URG data on Gim30.");
       for(int i=0; i<step; i++){
-	ranges[1][i] = 0;
-	intensities[1][i] = 0;
+		ranges[1][i] = 0;
+		intensities[1][i] = 0;
       } 
       return false;
     }
@@ -252,7 +269,7 @@ bool Gim30::GetURGData(ros::Time& t)
     if(urg_get_distance(&urg, ranges[1], &timestamp) <= 0){
       ROS_WARN("Disable to get URG data on Gim30.");
       for(int i=0; i<step; i++)
-	ranges[1][i] = 0;
+		ranges[1][i] = 0;
       return false;
     }
   }

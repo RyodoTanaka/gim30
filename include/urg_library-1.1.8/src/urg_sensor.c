@@ -444,8 +444,8 @@ static urg_measurement_type_t parse_distance_echoback(urg_t *urg,
 }
 
 
-static int receive_length_data(urg_t *urg, float length[],
-                               float intensity[],
+static int receive_length_data(urg_t *urg, double length[],
+                               double intensity[],
                                urg_measurement_type_t type, char buffer[])
 {
     int n;
@@ -564,7 +564,7 @@ static int receive_length_data(urg_t *urg, float length[],
 
 
 //! ‹——£ƒf[ƒ^‚ÌŽæ“¾
-static int receive_data(urg_t *urg, float data[], float intensity[],
+static int receive_data(urg_t *urg, double data[], double intensity[],
                         long *time_stamp)
 {
     urg_measurement_type_t type;
@@ -927,7 +927,7 @@ int urg_start_measurement(urg_t *urg, urg_measurement_type_t type,
 }
 
 
-int urg_get_distance(urg_t *urg, float data[], long *time_stamp)
+int urg_get_distance(urg_t *urg, double data[], long *time_stamp)
 {
     if (!urg->is_active) {
         return set_errno_and_return(urg, URG_NOT_CONNECTED);
@@ -937,7 +937,7 @@ int urg_get_distance(urg_t *urg, float data[], long *time_stamp)
 
 
 int urg_get_distance_intensity(urg_t *urg,
-                               float data[], float intensity[],
+                               double data[], double intensity[],
                                long *time_stamp)
 {
     if (!urg->is_active) {
@@ -948,7 +948,7 @@ int urg_get_distance_intensity(urg_t *urg,
 }
 
 
-int urg_get_multiecho(urg_t *urg, float data_multi[], long *time_stamp)
+int urg_get_multiecho(urg_t *urg, double data_multi[], long *time_stamp)
 {
     if (!urg->is_active) {
         return set_errno_and_return(urg, URG_NOT_CONNECTED);
@@ -959,8 +959,8 @@ int urg_get_multiecho(urg_t *urg, float data_multi[], long *time_stamp)
 
 
 int urg_get_multiecho_intensity(urg_t *urg,
-                                float data_multi[],
-                                float intensity_multi[],
+                                double data_multi[],
+                                double intensity_multi[],
                                 long *time_stamp)
 {
     if (!urg->is_active) {
