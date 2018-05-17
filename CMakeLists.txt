@@ -10,9 +10,6 @@ catkin_package(
  CATKIN_DEPENDS roscpp sensor_msgs
  )
 
-find_package(roslaunch)
-roslaunch_add_file_check(test/gim30_launch_test.xml)
-
 include_directories(
   include
   include/urg_library-1.1.8/include
@@ -46,3 +43,22 @@ target_link_libraries(gim30_node
   urg_c
   ${catkin_LIBRARIES}
 )
+
+# Install
+install(TARGETS gim30_node
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+install(DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+)
+
+foreach(dir launch)
+  install(DIRECTORY ${dir}/
+    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/${dir})
+endforeach(dir)
+
+# Test
+if (CATKIN_ENABLE_TESTING)
+  find_package(roslaunch REQUIRED)
+  roslaunch_add_file_check(launch)
+endif()
